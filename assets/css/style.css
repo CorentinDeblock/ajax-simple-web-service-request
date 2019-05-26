@@ -1,5 +1,33 @@
+* {
+  font-family: "Merriweather", serif;
+}
+
 html {
   background: linear-gradient(115deg, #c1c1c1, white);
+}
+
+footer {
+  left: 50%;
+  top: 90%;
+  transform: translateX(-50%);
+  position: fixed;
+  font-size: 25px;
+  width: 100%;
+  text-align: center;
+}
+
+header {
+  justify-content: center;
+  align-items: center;
+  padding-top: 40px;
+  display: flex;
+}
+header img {
+  width: 100px;
+  height: 100px;
+}
+header h1 {
+  margin-left: 20px;
 }
 
 #quotation {
@@ -10,13 +38,13 @@ html {
   text-align: center;
 }
 #quotation .title {
-  color: orange;
+  color: black;
   font-size: 45px;
 }
 #quotation img {
   margin: auto;
   border-radius: 100%;
-  border: 8px solid black;
+  border: 8px solid grey;
   width: 150px;
   height: 150px;
 }
@@ -36,6 +64,35 @@ html {
   border-radius: 10px;
   border: 5px solid #c1c1c1;
   background-color: #51c151;
+}
+
+.fadeOut {
+  animation: fadeOut 0.4s linear;
+}
+
+.fadeIn {
+  animation: fadeIn 0.4s linear;
+}
+
+.fade {
+  opacity: 0;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */

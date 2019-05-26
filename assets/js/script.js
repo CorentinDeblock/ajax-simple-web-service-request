@@ -1,34 +1,75 @@
-let bq = document.querySelector("#quotation blockquote");
-let img = document.querySelector("#quotation img");
-let p = document.querySelector("#quotation #author")
 let btn = document.querySelector("#quotation #reloader")
-let ajax = new XMLHttpRequest();
-img.style.display = "none";
-bq.style.display = "none";
-function onLoad(){
-    if(ajax.status >= 200 && ajax.status < 300 ){
-        bq.style.display = "block";
-        let query = JSON.parse(ajax.responseText);
-        if(query.photo != ""){
-            img.src = query.photo;
-            img.style.display = "block";
-        }else{
-            img.style.display = "none";
-        }
-        bq.innerText = query.quote;
-        p.innerText = query.author;
+
+let fade = new QJS6.Animation.Fader();
+let ajax = new QJS6.Ajax.Get("https://thatsthespir.it/api",true);
+let buffer = new QJS6.Ajax.Buffers();
+
+function applyHTML(element,content){
+    element.innerHTML = content;
+}
+function apllySrc(img,content){
+    if(content != ""){
+        img.style.display = "block";
+        img.src = content;
     }else{
-        console.log("Request failed");
+        img.style.display = "none";
     }
 }
 
-ajax.onload = onLoad;
-
-function sendRequest(){
-    ajax.open("GET","https://thatsthespir.it/api");
-    ajax.send();
+function applyText(element,content){
+    element.innerText = content;
+}
+buffer.onSuccess = () => {
+    if(buffer.called == 0){
+        fade.fadeElmeent("in");
+    }
+}
+buffer.add("photo","#quotation img",false,(key,value) => {
+    if(buffer.called == 0){
+        apllySrc(value,key);
+    }else{
+        fade.applyAfter("fadeOut",() => {
+            apllySrc(value,key);
+        })
+    }
+})
+buffer.add("quote","#quotation blockquote",false,(key,value) => {
+    if(buffer.called == 0){
+        applyHTML(value,key);
+    }else{
+        fade.applyAfter("fadeOut",() =>{
+            applyHTML(value,key);
+        })
+    }
+})
+buffer.add("author","#quotation #author",false,(key,value) => {
+    if(buffer.called == 0){
+        applyText(value,key);
+    }else{
+        fade.applyAfter("fadeOut",() => {
+            applyText(value,key);
+        })
+    }
+})
+fade.callback = (event) => {
+    console.log(event.animationName);
 }
 
-sendRequest();
+ajax.convert = (obj) => {
+    return JSON.parse(obj);
+}
 
-btn.addEventListener("click",sendRequest);
+ajax.success = buffer.success;
+
+ajax.failed = () => {
+    console.log('request failed');
+}
+ajax.oncall = () => {
+    if(buffer.called > 0){
+        fade.fadeElmeent("out");
+    }
+}
+
+ajax.call();
+
+btn.addEventListener("click",ajax.call);
