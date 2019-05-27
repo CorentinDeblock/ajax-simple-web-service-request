@@ -3,7 +3,6 @@ let btn = document.querySelector("#quotation #reloader")
 let fade = new QJS6.Animation.Fader();
 let ajax = new QJS6.Ajax.Get("https://thatsthespir.it/api",true);
 let buffer = new QJS6.Ajax.Buffers();
-
 function applyHTML(element,content){
     element.innerHTML = content;
 }
@@ -51,9 +50,6 @@ buffer.add("author","#quotation #author",false,(key,value) => {
         })
     }
 })
-fade.callback = (event) => {
-    console.log(event.animationName);
-}
 
 ajax.convert = (obj) => {
     return JSON.parse(obj);
