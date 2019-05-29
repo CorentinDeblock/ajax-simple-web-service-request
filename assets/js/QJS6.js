@@ -46,15 +46,6 @@ let QJS6Tools = {
             this.callback = (event) =>{
                 
             }
-            let allButton = document.querySelectorAll("#reloader");
-            let allElement = document.querySelectorAll(classCss);
-            allButton.forEach((value) => {
-                allElement.forEach((valueElem) => {
-                    if(value.getAttribute("parent") == valueElem.getAttribute("id")){
-                        console.log("is related")
-                    }
-                })
-            })
 
             this.removeAnimation = new Map();
             this.bufferAnim = new Map();
