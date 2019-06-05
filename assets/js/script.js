@@ -1,12 +1,13 @@
-let btn = document.querySelector("#quotation #reloader")
+let btn = document.querySelector("#quotation #reloader");
 
 let fade = new QJS6.Animation.Fader();
-let ajax = new QJS6.Ajax.Get("https://thatsthespir.it/api",true);
 let buffer = new QJS6.Ajax.Buffers();
+let ajax = new QJS6.Ajax.Get("https://thatsthespir.it/api",true,buffer);
+
 function applyHTML(element,content){
     element.innerHTML = content;
 }
-function apllySrc(img,content){
+function applySrc(img,content){
     if(content != ""){
         img.style.display = "block";
         img.src = content;
@@ -18,22 +19,18 @@ function apllySrc(img,content){
 function applyText(element,content){
     element.innerText = content;
 }
-buffer.onSuccess = () => {
-    if(buffer.called == 0){
-        fade.fadeElmeent("in");
-    }
-}
+
 buffer.add("photo","#quotation img",false,(key,value) => {
-    if(buffer.called == 0){
-        apllySrc(value,key);
+    if(ajax.called == 0){
+        applySrc(value,key);
     }else{
         fade.applyAfter("fadeOut",() => {
-            apllySrc(value,key);
+            applySrc(value,key);
         })
     }
 })
 buffer.add("quote","#quotation blockquote",false,(key,value) => {
-    if(buffer.called == 0){
+    if(ajax.called == 0){
         applyHTML(value,key);
     }else{
         fade.applyAfter("fadeOut",() =>{
@@ -42,7 +39,7 @@ buffer.add("quote","#quotation blockquote",false,(key,value) => {
     }
 })
 buffer.add("author","#quotation #author",false,(key,value) => {
-    if(buffer.called == 0){
+    if(ajax.called == 0){
         applyText(value,key);
     }else{
         fade.applyAfter("fadeOut",() => {
@@ -55,17 +52,35 @@ ajax.convert = (obj) => {
     return JSON.parse(obj);
 }
 
-ajax.success = buffer.success;
+fade.callbackOut = () => {
+    if(ajax.isSuccess){
+        fade.fadeElement("in");
+    }else{
+        QJS6.waitForData(ajax,() => {
+            fade.fadeElement("in");
+        })
+    }
+}
 
 ajax.failed = () => {
     console.log('request failed');
 }
-ajax.oncall = () => {
-    if(buffer.called > 0){
-        fade.fadeElmeent("out");
+ajax.onSuccess = () => {
+    if(ajax.called == 0){
+        fade.fadeElement("in");
+    }
+}
+ajax.onCall = () => {
+    if(ajax.called > 0){
+        fade.fadeElement("out");
     }
 }
 
+
 ajax.call();
 
-btn.addEventListener("click",ajax.call);
+btn.addEventListener("click",() => {
+    if(ajax.isSuccess){
+        ajax.call();
+    }
+});
